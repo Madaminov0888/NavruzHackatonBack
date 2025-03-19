@@ -4,8 +4,8 @@ from rest_framework.views import Response
 from rest_framework import status
 from django import http
 from django.db.models import Q
-from .models import AppUser, ImageModel, TrashBin
-from .serializer import AppUserSerializer, ImageModelSerializer, TrashBinSerializer
+from .models import AppUser, ImageModel, TrashBin, BinCategory
+from .serializer import AppUserSerializer, ImageModelSerializer, TrashBinSerializer, BinCategorySerializer
 
 
 class TrashBinsAPIView(APIView):
@@ -32,7 +32,7 @@ class AppUserSingleAPIView(APIView):
     serializer_class = AppUserSerializer
 
 
-    def get_object(id: str) -> object:
+    def get_object(self, id: str) -> object:
         try: 
             return AppUser.objects.get(id = id)
         except:
@@ -70,3 +70,13 @@ class AppUserSingleAPIView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+
+
+class BinCategoryAPIView(APIView):
+    serializer_class = BinCategorySerializer
+
+    def get(self, request, *args, **kwards):
+        categories = BinCategory.objects.all()
+        serializer = self.serializer_class(categories, many = True)
+        return Response(serializer.data)
